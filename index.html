@@ -6,57 +6,59 @@
 <meta name="theme-color" content="#C06A3C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Miso 食谱">
-<title>Miso 食谱 · 一起做菜</title>
+<meta name="apple-mobile-web-app-title" content="Chiikawa 食谱">
+<title>Chiikawa 食谱 · 一起做菜</title>
 <style>
   /* ========== 设计变量 ========== */
   :root{
-    --bg:#FBEFDC;             /* 页面奶油底色 */
-    --card:#FFFDF9;           /* 卡片白 */
-    --ink:#4C3A2B;            /* 深棕文字 */
-    --ink-2:#6B573F;          /* 次级文字 */
-    --muted:#A18B70;          /* 弱文字 */
-    --accent:#C75D33;         /* 主橙红 */
-    --accent-deep:#B24E27;
-    --accent-soft:#F9E7D6;    /* 主色浅底 */
-    --line:#F0E2CC;           /* 浅描边 */
-    --header1:#C06A3C;        /* 头部渐变 */
-    --header2:#D8915B;
+    --bg:#FBEFDC; --card:#FFFDF9;
+    --ink:#4C3A2B; --ink-2:#6B573F; --muted:#A18B70;
+    --accent:#C75D33; --accent-deep:#B24E27; --accent-soft:#F9E7D6;
+    --line:#F0E2CC;
+    --header1:#C06A3C; --header2:#D8915B;
+    --ok:#4E8B47; --ok-bg:#DFF0DC;
+    --accent-mid:#E9A75C; --soft:#F6EAD4; --soft2:#FBF3E3;
+    --paper2:#FFFCF4; --navbg:rgba(251,240,223,.96);
+    --body1:#F6E3C4; --body2:#EAD5B2;
     --r-l:24px; --r-m:18px; --r-s:14px;
     --shadow-s:0 1px 2px rgba(150,90,30,.06),0 2px 6px rgba(150,90,30,.07);
     --shadow-m:0 2px 4px rgba(150,90,30,.07),0 6px 16px rgba(150,90,30,.10);
     --shadow-l:0 18px 44px rgba(90,50,15,.28);
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;overscroll-behavior-y:none}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
     background:
-      radial-gradient(1200px 600px at 80% -100px, #F6E3C4 0%, transparent 60%),
-      radial-gradient(900px 500px at -100px 110%, #EAD5B2 0%, transparent 55%),
-      #EEDCC0;
-    color:var(--ink);
-    -webkit-font-smoothing:antialiased;
+      radial-gradient(1200px 600px at 80% -100px, var(--body1) 0%, transparent 60%),
+      radial-gradient(900px 500px at -100px 110%, var(--body2) 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);-webkit-font-smoothing:antialiased;
   }
   button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;font-size:inherit}
   button:active{opacity:.92}
+  button:disabled{cursor:default;opacity:.45}
   .pressable{transition:transform .16s cubic-bezier(.34,1.56,.64,1),box-shadow .16s ease}
   .pressable:active{transform:scale(.955)}
   :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:6px}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  ::-webkit-scrollbar-track{background:transparent}
 
   /* ========== 手机框架 ========== */
   .phone{
-    position:relative;max-width:430px;margin:0 auto;min-height:100vh;
+    position:relative;max-width:430px;margin:0 auto;min-height:100vh;min-height:100svh;
     background:var(--bg);box-shadow:0 0 0 1px rgba(150,90,30,.12),0 0 60px rgba(120,70,20,.28);
     display:flex;flex-direction:column;overflow:hidden;
   }
+  /* 打开抽屉/弹窗时锁定背景,防止页面乱动 */
+  body.locked{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
   /* ========== 仿状态栏 ========== */
   .statusbar{
     display:flex;justify-content:space-between;align-items:center;
     padding:14px 24px 8px;font-size:15.5px;font-weight:700;color:#FFF9F0;
-    background:var(--header1);letter-spacing:.2px;
-    font-variant-numeric:tabular-nums;
+    background:var(--header1);letter-spacing:.2px;font-variant-numeric:tabular-nums;
   }
   .statusbar .right{display:flex;gap:7px;align-items:center}
   .statusbar svg{display:block}
@@ -65,15 +67,19 @@
   header.topbar{
     background:linear-gradient(118deg,var(--header1) 20%,var(--header2));
     padding:8px 18px 20px;display:flex;justify-content:space-between;align-items:center;
-    position:relative;
+    position:relative;overflow:hidden;
   }
-  header.topbar::after{ /* 底部柔和过渡 */
+  header.topbar::before{ /* 柔光装饰 */
+    content:"";position:absolute;right:-40px;top:-60px;width:150px;height:150px;border-radius:50%;
+    background:rgba(255,240,215,.14);pointer-events:none;
+  }
+  header.topbar::after{
     content:"";position:absolute;left:0;right:0;bottom:-14px;height:14px;
     background:linear-gradient(180deg,rgba(199,106,60,.16),transparent);pointer-events:none;
   }
   .hello{display:flex;align-items:center;gap:12px;color:#FFF9F0}
   .hello .ico{
-    width:46px;height:46px;border-radius:15px;background:#FBEBD2;
+    width:46px;height:46px;border-radius:15px;background:var(--accent-soft);
     display:grid;place-items:center;box-shadow:inset 0 0 0 2px #E4C79C,0 2px 6px rgba(120,60,10,.18);
   }
   .hello .t{font-size:23px;font-weight:800;letter-spacing:.5px;text-shadow:0 1px 2px rgba(120,60,10,.25)}
@@ -84,7 +90,7 @@
     display:flex;align-items:center;gap:6px;
   }
   .pill.ghost{color:#FFEFD9;background:rgba(255,244,225,.16);box-shadow:inset 0 0 0 1.5px rgba(255,240,215,.5)}
-  .pill.me{background:#FBEBD2;color:var(--ink);box-shadow:0 2px 6px rgba(120,60,10,.18)}
+  .pill.me{background:var(--accent-soft);color:var(--ink);box-shadow:0 2px 6px rgba(120,60,10,.18)}
 
   /* ========== 页面容器 ========== */
   main{flex:1;padding-bottom:126px}
@@ -101,16 +107,17 @@
 
   /* ========== 搜索框 ========== */
   .search{
-    display:flex;align-items:center;gap:10px;background:#FFFDF8;
+    display:flex;align-items:center;gap:10px;background:var(--card);
     border-radius:19px;padding:0 16px;height:56px;box-shadow:var(--shadow-s);
     border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s;
   }
-  .search:focus-within{border-color:#E8B488;box-shadow:0 4px 14px rgba(199,93,51,.14)}
+  .search:focus-within{border-color:var(--accent-mid);box-shadow:0 4px 14px rgba(199,93,51,.14)}
   .search .s-ico{font-size:19px;opacity:.75}
   .search input{flex:1;border:none;outline:none;background:none;font-size:16.5px;color:var(--ink);min-width:0}
-  .search input::placeholder{color:#C9B7A0}
+  .search input::placeholder{color:var(--muted)}
+  .search input::-webkit-search-cancel-button{display:none}
   .search .clear{
-    display:none;width:26px;height:26px;border-radius:50%;background:#EFE2CB;color:#8A7458;
+    display:none;width:26px;height:26px;border-radius:50%;background:var(--soft);color:var(--ink-2);
     font-size:15px;font-weight:800;place-items:center;line-height:1;
   }
   .search.has .clear{display:grid}
@@ -119,12 +126,24 @@
   .chips{display:flex;gap:10px;overflow-x:auto;padding:16px 2px 4px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
   .chip{
-    flex:0 0 auto;height:42px;padding:0 19px;border-radius:21px;font-size:14.5px;font-weight:700;
-    background:#FFFDF8;color:#7C6650;box-shadow:var(--shadow-s);white-space:nowrap;
+    flex:0 0 auto;height:42px;padding:0 17px;border-radius:21px;font-size:14.5px;font-weight:700;
+    background:var(--card);color:var(--ink-2);box-shadow:var(--shadow-s);white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px;
     transition:transform .16s cubic-bezier(.34,1.56,.64,1),background .2s,color .2s,box-shadow .2s;
   }
   .chip:active{transform:scale(.93)}
+  .chip .c-num{
+    font-style:normal;font-size:11.5px;font-weight:800;background:var(--soft2);color:#A18B70;
+    border-radius:9px;padding:2px 7px;font-variant-numeric:tabular-nums;
+  }
   .chip.on{background:var(--accent);color:#FFF6EC;box-shadow:0 4px 10px rgba(199,93,51,.35);transform:scale(1.04)}
+  .chip.on .c-num{background:rgba(255,255,255,.25);color:#FFF6EC}
+  /* 快捷筛选行 */
+  .qf-row{padding-top:12px;gap:8px}
+  .chip.qf{height:36px;padding:0 14px;font-size:13px;border-radius:18px;background:var(--paper2);box-shadow:inset 0 0 0 1.5px var(--line),0 1px 2px rgba(150,90,30,.05)}
+  .chip.qf.on{background:var(--accent-soft);color:var(--accent-deep);box-shadow:inset 0 0 0 1.5px var(--accent-mid)}
+  .chip.qf.fun{background:var(--accent-soft);color:#C06A3C;box-shadow:inset 0 0 0 1.5px var(--accent-mid)}
+  .chip.qf.sort{color:var(--ink-2)}
 
   /* ========== 食材九宫格 ========== */
   .ing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:14px}
@@ -139,12 +158,30 @@
   .ing-card .label{font-size:15px;font-weight:700;color:var(--ink-2)}
   .ing-card .plus{
     position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;
-    display:grid;place-items:center;font-size:17px;color:#B7A488;font-weight:800;transition:.2s;
+    display:grid;place-items:center;font-size:17px;color:var(--muted);font-weight:800;transition:.2s;
   }
   .ing-card.on{border-color:var(--accent);background:#FDF2E4;box-shadow:0 4px 12px rgba(199,93,51,.16)}
   .ing-card.on .plus{background:var(--accent);color:#fff;animation:pop .3s cubic-bezier(.34,1.8,.64,1)}
   .ing-card.on .label{color:var(--accent-deep)}
   @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+  .ing-card.pulse{animation:ringpulse 1.5s ease}
+  @keyframes ringpulse{
+    0%{box-shadow:0 0 0 0 rgba(199,93,51,.5);transform:scale(1)}
+    35%{box-shadow:0 0 0 12px rgba(199,93,51,0);transform:scale(1.06)}
+    70%{box-shadow:0 0 0 0 rgba(199,93,51,.25);transform:scale(1)}
+    100%{box-shadow:0 0 0 0 rgba(199,93,51,0)}
+  }
+
+  /* 已选食材横条 */
+  .picked-row{display:flex;gap:8px;overflow-x:auto;padding:14px 2px 2px;scrollbar-width:none}
+  .picked-row::-webkit-scrollbar{display:none}
+  .pick-pill{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 8px 0 13px;
+    border-radius:18px;background:var(--accent-soft);color:var(--accent-deep);font-size:13.5px;font-weight:700;
+    box-shadow:inset 0 0 0 1.5px var(--accent-mid);animation:pop .25s cubic-bezier(.34,1.8,.64,1);
+  }
+  .pick-pill i{font-style:normal;width:20px;height:20px;border-radius:50%;background:rgba(199,93,51,.14);display:grid;place-items:center;font-size:11px}
+  .pick-pill.clear{background:var(--soft);color:var(--ink-2);box-shadow:inset 0 0 0 1.5px var(--line);padding:0 14px}
 
   /* ========== 找食谱大按钮 ========== */
   .find-btn{
@@ -154,27 +191,45 @@
     background:#EBDBBE;color:#BCA684;
   }
   .find-btn:active{transform:scale(.97)}
-  .find-btn .cnt{
-    font-size:13px;font-weight:800;background:rgba(255,255,255,.28);padding:3px 10px;border-radius:11px;
-    display:none;
-  }
+  .find-btn .cnt{font-size:13px;font-weight:800;background:rgba(255,255,255,.28);padding:3px 10px;border-radius:11px;display:none}
   .find-btn.ready{background:linear-gradient(135deg,var(--accent),#D97A48);color:#FFF6EC;box-shadow:0 7px 18px rgba(199,93,51,.4)}
   .find-btn.ready .cnt{display:inline-block}
+
+  /* ========== 今日推荐横幅 ========== */
+  .daily{
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:14px;padding:18px 20px;border-radius:24px;overflow:hidden;text-align:left;
+    box-shadow:var(--shadow-m);position:relative;
+  }
+  .daily::after{content:"";position:absolute;right:-30px;top:-40px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.28)}
+  .d-info{display:flex;flex-direction:column;gap:4px;position:relative;z-index:1;min-width:0}
+  .d-badge{font-size:11.5px;font-weight:800;color:#8A5A2E;background:rgba(255,252,244,.8);padding:4px 10px;border-radius:10px;width:max-content}
+  .d-name{font-size:22px;font-weight:800;letter-spacing:.3px}
+  .d-why{font-size:12.5px;font-weight:600;color:#7A5A3E}
+  .d-emoji{font-size:52px;filter:drop-shadow(0 4px 5px rgba(90,40,10,.2));position:relative;z-index:1;animation:bob 3.2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
   /* ========== 食谱双列卡片 ========== */
   .recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
   .recipe{
     position:relative;background:var(--card);border-radius:22px;overflow:hidden;
     box-shadow:var(--shadow-s);transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;
+    display:flex;flex-direction:column;
   }
   .recipe:active{transform:scale(.96)}
   .recipe .photo{height:124px;display:grid;place-items:center;font-size:58px;position:relative;overflow:hidden}
-  .recipe .photo::before,.recipe .photo::after{ /* 装饰泡泡 */
-    content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.35);
-  }
+  .recipe .photo::before,.recipe .photo::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.35)}
   .recipe .photo::before{width:74px;height:74px;right:-20px;top:-22px}
   .recipe .photo::after{width:44px;height:44px;left:-12px;bottom:-14px;background:rgba(255,255,255,.28)}
-  .recipe .photo .e{position:relative;z-index:1;filter:drop-shadow(0 5px 6px rgba(90,40,10,.22))}
+  .recipe .photo .e{position:relative;z-index:1;filter:drop-shadow(0 5px 6px rgba(90,40,10,.22));transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+  .recipe .flag{
+    position:absolute;left:10px;top:10px;z-index:2;font-size:11.5px;font-weight:800;color:#8A5A2E;
+    background:rgba(255,249,240,.92);border-radius:10px;padding:3px 9px;letter-spacing:.5px;
+  }
+  .recipe .cooked-mark{
+    position:absolute;left:10px;bottom:10px;z-index:2;font-size:11.5px;font-weight:800;
+    color:#FFF6EC;background:rgba(78,139,71,.92);border-radius:10px;padding:3px 9px;
+  }
   .recipe .heart{
     position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;
     background:rgba(255,253,248,.92);font-size:16px;color:#B9A88F;display:grid;place-items:center;
@@ -183,34 +238,26 @@
   .recipe .heart:active{transform:scale(.8)}
   .recipe .heart.on{color:#E0472F;animation:heartpop .34s cubic-bezier(.34,1.8,.64,1)}
   @keyframes heartpop{0%{transform:scale(.4)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
-  .recipe .soon{
-    position:absolute;right:10px;bottom:10px;z-index:2;background:rgba(255,249,240,.95);color:#8A7458;
-    font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:13px;box-shadow:0 2px 5px rgba(0,0,0,.1);
-  }
-  .recipe .num{
-    position:absolute;left:10px;top:10px;z-index:2;font-size:12px;font-weight:800;color:#8A5A2E;
-    background:rgba(255,249,240,.92);border-radius:10px;padding:3px 8px;
-  }
-  .r-body{padding:13px 14px 15px}
-  .r-body h3{font-size:19px;font-weight:800;margin-bottom:9px;letter-spacing:.3px}
+  .r-body{padding:13px 14px 15px;display:flex;flex-direction:column;gap:9px}
+  .r-body h3{font-size:19px;font-weight:800;letter-spacing:.3px}
   .tags{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
   .tag{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:13px}
+  .tag.easy{background:#DFF0DC;color:#3F7A38}
   .tag.medium{background:#E4EDCB;color:#75823E}
-  .tag.hard{background:#F7DACD;color:#B8502F}
+  .tag.hard{background:#F7DACD;color:var(--accent-deep)}
   .tag.time{background:#DEEAF6;color:#456C93;font-variant-numeric:tabular-nums}
   .tag.ok{background:#DFF0DC;color:#4E8B47}
-  .tag.miss{background:#F1E6D2;color:#9A7B4F}
+  .tag.miss{background:#F1E6D2;color:var(--ink-2)}
+  .tag.kcal{background:#FCE9D2;color:#B26227;font-variant-numeric:tabular-nums}
 
   /* 空状态 */
-  .empty{
-    display:none;text-align:center;padding:44px 20px 30px;color:var(--muted);
-  }
+  .empty{display:none;text-align:center;padding:44px 20px 30px;color:var(--muted)}
   .empty.show{display:block;animation:fade .3s ease}
   .empty .big{font-size:52px;margin-bottom:12px;filter:grayscale(.2)}
   .empty .t{font-size:16px;font-weight:700;color:var(--ink-2)}
   .empty .s{font-size:13.5px;margin-top:6px}
 
-  /* ========== Miso 猫咪(SVG) ========== */
+  /* ========== 吉伊 & 小八(SVG) ========== */
   .miso-svg{width:100%;height:100%;display:block}
   .miso-svg .eyes{animation:blink 4.2s infinite;transform-box:fill-box;transform-origin:center}
   @keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
@@ -218,19 +265,24 @@
   .miso-svg .paw-r{animation:wave 2.6s ease-in-out .4s infinite;transform-box:fill-box;transform-origin:10% 90%}
   @keyframes wave{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-9deg)}}
 
-  /* ========== 吉祥物悬浮 ========== */
-  .mascot{position:sticky;bottom:128px;height:0;display:flex;justify-content:flex-end;padding-right:14px;z-index:30}
+  /* ========== 吉祥物悬浮(固定屏幕右侧中部,可拖动) ========== */
+  .mascot{
+    position:fixed;top:52%;right:max(14px, calc(50vw - 201px));z-index:35;
+    touch-action:none;user-select:none;
+  }
+  .mascot.dragging .cat{animation:none;transform:scale(1.06)}
+  @media (min-width:760px){.mascot{right:max(14px, calc(50vw - 346px))}}
+  @media (min-width:1020px){.mascot{right:max(14px, calc(50vw - 476px))}}
   .mascot .cat{
     width:84px;height:84px;border-radius:50%;overflow:hidden;
-    background:radial-gradient(circle at 35% 30%,#FCE9CB,#F0BE7E);
-    box-shadow:0 0 0 5px #E9A75C,0 8px 18px rgba(150,90,30,.35);
-    padding:6px;transition:transform .18s cubic-bezier(.34,1.8,.64,1);
+    background:#FFF6EA;
+    box-shadow:0 0 0 5px var(--accent-mid),0 8px 18px rgba(150,90,30,.35);
+    padding:0;transition:transform .18s cubic-bezier(.34,1.8,.64,1);
     animation:bob 3.2s ease-in-out infinite;
   }
   .mascot .cat:active{transform:scale(.9)}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
   .bubble{
-    position:absolute;bottom:76px;right:8px;width:186px;background:#FFFCF4;color:var(--ink);
+    position:absolute;bottom:76px;right:8px;width:186px;background:var(--paper2);color:var(--ink);
     font-size:14px;font-weight:600;line-height:1.5;padding:12px 14px;border-radius:16px;
     box-shadow:0 6px 16px rgba(100,60,20,.2);opacity:0;transform:translateY(8px) scale(.96);
     transition:.28s cubic-bezier(.34,1.4,.64,1);pointer-events:none;transform-origin:90% 100%;
@@ -238,16 +290,23 @@
   .bubble.show{opacity:1;transform:none}
   .bubble::after{
     content:"";position:absolute;bottom:-7px;right:26px;width:14px;height:14px;
-    background:#FFFCF4;transform:rotate(45deg);border-radius:3px;
+    background:var(--paper2);transform:rotate(45deg);border-radius:3px;
   }
 
   /* ========== 社区空状态页 ========== */
   .construct{
     margin-top:22px;text-align:center;padding:46px 24px 52px;
-    background:repeating-linear-gradient(-45deg,#FFFDF8 0 14px,#FBF4E6 14px 28px);
-    border-radius:26px;box-shadow:var(--shadow-s);border:2px dashed #E4CFA9;
+    background:repeating-linear-gradient(-45deg,var(--card) 0 14px,var(--soft2) 14px 28px);
+    border-radius:26px;box-shadow:var(--shadow-s);border:2px dashed var(--line);
   }
   .construct .big{font-size:64px;animation:swing 2.8s ease-in-out infinite;transform-origin:50% 20%}
+  .construct .big img{width:122px;height:122px;object-fit:contain;display:block;margin:0 auto}
+
+  /* ========== 网络形象图(百科图床,no-referrer 直连防盗链) ========== */
+  .char-img{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;pointer-events:none;-webkit-user-drag:none}
+  .hello .ico .char-img{width:34px;height:34px;border-radius:12px}
+  .me-avatar .char-img{border-radius:16px}
+  .mascot .cat .char-img{border-radius:50%;object-position:47% 52%}
   @keyframes swing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
   .construct .t{margin-top:16px;font-size:18px;font-weight:800}
   .construct .s{margin-top:7px;font-size:14px;color:var(--muted);line-height:1.6}
@@ -256,15 +315,15 @@
   .me-card{background:var(--card);border-radius:26px;padding:22px 18px;box-shadow:var(--shadow-s)}
   .me-top{display:flex;align-items:center;gap:16px}
   .me-avatar{
-    width:76px;height:76px;border-radius:24px;background:radial-gradient(circle at 35% 30%,#FCE9CB,#F0BE7E);
-    box-shadow:inset 0 0 0 2.5px #E9A75C,0 4px 10px rgba(150,90,30,.2);padding:8px;flex:0 0 auto;
+    width:76px;height:76px;border-radius:24px;background:radial-gradient(circle at 35% 30%,var(--accent-soft),var(--accent-mid));
+    box-shadow:inset 0 0 0 2.5px var(--accent-mid),0 4px 10px rgba(150,90,30,.2);padding:8px;flex:0 0 auto;
   }
   .me-name{font-size:26px;font-weight:800;display:flex;align-items:center;gap:9px}
-  .me-name button{font-size:14px;color:var(--muted);background:#F6EAD4;border-radius:11px;padding:5px 10px;font-weight:700}
+  .me-name button{font-size:14px;color:var(--muted);background:var(--soft);border-radius:11px;padding:5px 10px;font-weight:700}
   .me-loc{margin-top:6px;font-size:13.5px;color:var(--muted);font-weight:600}
-  .me-stats{display:flex;margin-top:20px;background:#FBF3E3;border-radius:18px;padding:14px 0}
+  .me-stats{display:flex;margin-top:20px;background:var(--soft2);border-radius:18px;padding:14px 0}
   .me-stats .st{flex:1;text-align:center;position:relative}
-  .me-stats .st + .st::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1.5px;background:#EAD9BC}
+  .me-stats .st + .st::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1.5px;background:var(--line)}
   .me-stats b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
   .me-stats span{display:block;margin-top:3px;font-size:12.5px;font-weight:700;color:var(--muted)}
 
@@ -275,43 +334,63 @@
   .buddy::before{content:"🐾";position:absolute;right:14px;bottom:44px;font-size:60px;opacity:.07;transform:rotate(-18deg)}
   .buddy .head{display:flex;justify-content:space-between;align-items:center}
   .buddy .head h3{font-size:18.5px;font-weight:800;letter-spacing:.5px}
-  .buddy .head button{font-size:13.5px;font-weight:700;color:#9A7B4F}
+  .buddy .head button{font-size:13.5px;font-weight:700;color:var(--ink-2)}
   .buddy .row{display:flex;align-items:center;gap:16px;margin-top:12px}
   .buddy .ava{
     width:92px;height:92px;flex:0 0 auto;border-radius:50%;overflow:hidden;
-    background:radial-gradient(circle at 35% 30%,#FCE9CB,#F0BE7E);
-    box-shadow:0 0 0 4px #E9A75C,0 6px 14px rgba(150,90,30,.25);padding:6px;
+    background:radial-gradient(circle at 35% 30%,var(--accent-soft),var(--accent-mid));
+    box-shadow:0 0 0 4px var(--accent-mid),0 6px 14px rgba(150,90,30,.25);padding:6px;
   }
   .buddy .nm{font-size:23px;font-weight:800}
-  .buddy .ds{margin-top:4px;font-size:13.5px;color:#9A7B4F;font-weight:600}
+  .buddy .ds{margin-top:4px;font-size:13.5px;color:var(--ink-2);font-weight:600}
   .buddy .go{
-    margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:#F8D9A8;color:#7A5620;
+    margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent-deep);
     font-size:14.5px;font-weight:800;padding:11px 18px;border-radius:18px;box-shadow:0 3px 8px rgba(180,120,40,.22);
   }
-  .bond{margin-top:16px;background:#FFFCF3;border-radius:18px;padding:14px 16px;box-shadow:var(--shadow-s)}
+  .bond{margin-top:16px;background:var(--paper2);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow-s)}
   .bond .bt{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800}
   .bond .bt .lv{color:var(--accent);font-variant-numeric:tabular-nums}
-  .bond .bar{margin-top:10px;height:10px;border-radius:6px;background:#EFE2C8;overflow:hidden}
-  .bond .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#E9A75C,var(--accent));transition:width .6s cubic-bezier(.22,.9,.36,1)}
-  .bond .dots{display:flex;gap:7px;margin-top:12px}
-  .bond .dots i{width:7px;height:7px;border-radius:50%;background:#DCC79F;transition:.2s}
+  .bond .bar{margin-top:10px;height:10px;border-radius:6px;background:var(--soft);overflow:hidden}
+  .bond .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent-mid),var(--accent));transition:width .6s cubic-bezier(.22,.9,.36,1)}
+  .bond .dots{display:flex;gap:6px;margin-top:12px}
+  .bond .dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:.2s}
   .bond .dots i.on{background:var(--accent);width:18px;border-radius:4px}
 
-  /* 收藏横滑 */
-  .saved-row{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
-  .saved-row::-webkit-scrollbar{display:none}
-  .saved-mini{
-    flex:0 0 132px;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-s);
-    transition:transform .16s;
+  /* 收藏列表 */
+  .saved-list{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+  .saved-item{
+    display:flex;align-items:center;gap:14px;background:var(--card);border-radius:20px;
+    padding:12px 14px;box-shadow:var(--shadow-s);text-align:left;
   }
-  .saved-mini:active{transform:scale(.95)}
-  .saved-mini .ph{height:74px;display:grid;place-items:center;font-size:36px}
-  .saved-mini .nm{padding:10px 12px 12px;font-size:14.5px;font-weight:800}
+  .saved-item .ph{
+    width:58px;height:58px;flex:0 0 auto;border-radius:18px;display:grid;place-items:center;font-size:30px;
+  }
+  .saved-item .si-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+  .saved-item .si-name{font-size:17px;font-weight:800}
+  .saved-item .si-tags{display:flex;flex-wrap:wrap;gap:6px}
+  .saved-item .si-go{color:var(--muted);font-size:22px;font-weight:800}
+
+  /* 成就墙 */
+  .achv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+  .achv{
+    background:var(--card);border-radius:18px;padding:14px 8px 12px;text-align:center;
+    box-shadow:var(--shadow-s);display:flex;flex-direction:column;gap:4px;align-items:center;
+  }
+  .achv .a-ico{font-size:30px;line-height:1}
+  .achv .a-name{font-size:12.5px;font-weight:800}
+  .achv .a-desc{font-size:10.5px;font-weight:600;color:var(--muted);line-height:1.35}
+  .achv.lock{filter:grayscale(1);opacity:.55}
+  .achv.lock .a-ico{filter:blur(.4px)}
+
+  .danger{
+    margin-top:18px;width:100%;padding:14px;border-radius:18px;font-size:14px;font-weight:700;
+    color:var(--accent-deep);background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent-mid);
+  }
 
   /* ========== 底部导航 ========== */
   nav.bottom{
     position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
-    background:rgba(251,240,223,.96);backdrop-filter:blur(10px);border-top:1px solid #EFE0C8;
+    background:var(--navbg);backdrop-filter:blur(10px);border-top:1px solid var(--line);
     display:flex;justify-content:space-around;
     padding:9px 8px calc(11px + env(safe-area-inset-bottom));z-index:40;
   }
@@ -325,7 +404,7 @@
   }
   .nav-item:active .n-ico{transform:scale(.88)}
   .nav-item.on{color:var(--accent)}
-  .nav-item.on .n-ico{background:#F6DDB6;box-shadow:inset 0 0 0 1.5px #EDC68F}
+  .nav-item.on .n-ico{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent-mid)}
   .nav-item .dot{width:5px;height:5px;border-radius:50%;background:transparent;transition:.2s}
   .nav-item.on .dot{background:var(--accent)}
 
@@ -336,12 +415,12 @@
   .veil.show{opacity:1;pointer-events:auto}
   .sheet{
     position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:100%;max-width:430px;
-    max-height:88vh;background:#FFFCF4;z-index:70;border-radius:28px 28px 0 0;
+    max-height:88vh;background:var(--paper2);z-index:70;border-radius:28px 28px 0 0;
     box-shadow:var(--shadow-l);transition:transform .34s cubic-bezier(.22,.9,.36,1);
     display:flex;flex-direction:column;overflow:hidden;
   }
   .sheet.show{transform:translate(-50%,0)}
-  .sheet .grab{width:44px;height:5px;border-radius:3px;background:#E4D3B4;margin:10px auto 2px;flex:0 0 auto}
+  .sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:10px auto 2px;flex:0 0 auto}
   .sheet .scroll{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
   .sheet-head{
     position:relative;height:150px;display:grid;place-items:center;font-size:66px;flex:0 0 auto;
@@ -356,51 +435,83 @@
     box-shadow:0 2px 6px rgba(0,0,0,.12);
   }
   .sheet-body{padding:18px 20px 0}
-  .sheet-body h2{font-size:25px;font-weight:800}
+  .sheet-body h2{font-size:25px;font-weight:800;color:var(--ink)}
   .sheet-intro{margin-top:8px;font-size:14px;line-height:1.65;color:var(--ink-2)}
-  .sheet-body .tags{margin-top:12px}
 
-  .list-title{margin:20px 2px 10px;font-size:15.5px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+  .list-title{margin:20px 2px 10px;font-size:15.5px;font-weight:800;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
   .list-title .hint{font-size:12.5px;font-weight:700;color:var(--muted)}
   .ing-list{display:flex;flex-wrap:wrap;gap:8px}
   .ing-pill{
     display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;
-    padding:8px 13px;border-radius:15px;background:#F6EDDD;color:#7A6647;
+    padding:8px 13px;border-radius:15px;background:var(--soft);color:var(--ink-2);
+    transition:transform .14s cubic-bezier(.34,1.56,.64,1),background .2s,color .2s;
   }
+  .ing-pill:active{transform:scale(.92)}
   .ing-pill.ok{background:#DFF0DC;color:#3F7A38}
-  .ing-pill.miss{background:#F7E3D8;color:#B8502F;opacity:.85}
+  .ing-pill.miss{background:#F7E3D8;color:#B8502F;opacity:.9}
+
+  .go-miss{
+    margin-top:12px;width:100%;padding:13px;border-radius:17px;
+    background:var(--accent-soft);color:var(--accent-deep);font-size:14.5px;font-weight:800;
+  }
 
   .steps{display:flex;flex-direction:column;gap:10px;margin-top:4px}
   .step{
-    display:flex;gap:12px;align-items:flex-start;background:#FBF4E4;border-radius:18px;padding:14px 15px;
-    transition:background .2s,transform .16s;
+    display:flex;gap:12px;align-items:flex-start;background:var(--soft2);border-radius:18px;padding:14px 15px;
   }
-  .step:active{transform:scale(.985)}
   .step .no{
-    flex:0 0 30px;height:30px;border-radius:50%;background:#EFE0C2;color:#9A7B4F;
-    display:grid;place-items:center;font-size:14px;font-weight:800;transition:.2s;
+    flex:0 0 30px;height:30px;border-radius:50%;background:var(--soft);color:var(--muted);
+    display:grid;place-items:center;font-size:14px;font-weight:800;
   }
   .step p{font-size:14.5px;line-height:1.6;font-weight:600;color:var(--ink-2)}
-  .step.done{background:#E7F2E3}
-  .step.done .no{background:#5DA354;color:#fff}
-  .step.done p{color:#5A7A50;text-decoration:line-through;text-decoration-color:rgba(90,120,80,.4)}
-  .step .tick{margin-left:auto;flex:0 0 22px;font-size:17px;color:#5DA354;opacity:0;transform:scale(.4);transition:.2s cubic-bezier(.34,1.8,.64,1)}
-  .step.done .tick{opacity:1;transform:scale(1)}
 
-  .cook-bar{padding:14px 20px calc(18px + env(safe-area-inset-bottom));background:#FFFCF4;border-top:1px solid #F3E7CF}
+  .cook-bar{padding:14px 20px calc(18px + env(safe-area-inset-bottom));background:var(--paper2);border-top:1px solid var(--line)}
   .cook-bar .prog{display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
-  .cook-bar .bar{margin-top:8px;height:10px;border-radius:6px;background:#EFE2C8;overflow:hidden}
-  .cook-bar .fill{height:100%;background:linear-gradient(90deg,#E9A75C,var(--accent));transition:width .4s cubic-bezier(.22,.9,.36,1);border-radius:6px}
+  .cook-bar .bar{margin-top:8px;height:10px;border-radius:6px;background:var(--soft);overflow:hidden}
+  .cook-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent-mid),var(--accent));transition:width .4s cubic-bezier(.22,.9,.36,1);border-radius:6px}
   .cook-btn{
     width:100%;margin-top:14px;padding:16px;border-radius:20px;font-size:17px;font-weight:800;letter-spacing:1px;
-    background:linear-gradient(135deg,var(--accent),#D97A48);color:#FFF6EC;
-    box-shadow:0 7px 18px rgba(199,93,51,.4);
+    background:linear-gradient(135deg,var(--accent),var(--accent-mid));color:#FFF6EC;
+    box-shadow:0 7px 18px rgba(199,93,51,.35);
     transition:transform .16s cubic-bezier(.34,1.56,.64,1);
   }
   .cook-btn:active{transform:scale(.97)}
-  .cook-btn.busy{background:#E9D9BD;color:#BFA98A;box-shadow:none}
 
-  /* 撒花 */
+  /* ========== 做菜模式(逐步视图) ========== */
+  .sheet.cooking .cook-bar{display:none}
+  .cook-view{display:flex;flex-direction:column;gap:16px;padding-bottom:10px}
+  .cv-top{display:flex;justify-content:space-between;align-items:center}
+  .cv-exit{font-size:13.5px;font-weight:800;color:var(--muted);background:var(--soft);padding:8px 14px;border-radius:14px}
+  .cv-stepnum{font-size:13.5px;font-weight:800;color:var(--accent-deep);font-variant-numeric:tabular-nums}
+  .cv-card{
+    text-align:left;background:var(--card);border-radius:24px;padding:26px 22px 20px;
+    box-shadow:var(--shadow-m);display:flex;flex-direction:column;gap:14px;min-height:150px;
+    transition:transform .16s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cv-card:active{transform:scale(.97)}
+  .cv-no{
+    width:44px;height:44px;border-radius:16px;background:var(--accent);color:#FFF6EC;
+    display:grid;place-items:center;font-size:20px;font-weight:800;flex:0 0 auto;
+  }
+  .cv-card p{font-size:20px;line-height:1.7;font-weight:700;color:var(--ink)}
+  .cv-tip{font-size:12px;font-weight:600;color:var(--muted)}
+  .cv-dots{display:flex;gap:8px;justify-content:center}
+  .cv-dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.2s}
+  .cv-dots i.ok{background:var(--accent)}
+  .cv-dots i.now{box-shadow:0 0 0 3px var(--accent-soft);background:var(--accent-deep);transform:scale(1.25)}
+  .cv-actions{display:flex;gap:10px}
+  .cv-btn{flex:1;padding:15px;border-radius:18px;font-size:15.5px;font-weight:800;transition:transform .16s cubic-bezier(.34,1.56,.64,1)}
+  .cv-btn:active{transform:scale(.96)}
+  .cv-btn.ghost{background:var(--soft);color:var(--ink-2)}
+  .cv-btn.main{background:linear-gradient(135deg,var(--accent),var(--accent-mid));color:#FFF6EC;box-shadow:0 6px 14px rgba(199,93,51,.3)}
+  .cv-btn.wide{width:100%}
+  .cook-view.final{text-align:center;padding-top:26px;gap:18px}
+  .cv-big{font-size:72px;animation:bob 2.6s ease-in-out infinite}
+  .cook-view.final h2{font-size:26px;font-weight:800;color:var(--ink)}
+  .cv-sub{font-size:14px;color:var(--ink-2);line-height:1.6}
+  .cook-view.final .cv-btn.main{padding:17px;font-size:17px}
+
+  /* ========== 撒花 ========== */
   .confetti{position:fixed;z-index:99;font-size:22px;pointer-events:none;animation:fall 1.4s ease-in forwards}
   @keyframes fall{
     0%{transform:translate(0,0) rotate(0deg) scale(.6);opacity:1}
@@ -416,6 +527,167 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%)}
 
+  /* ========== 成就解锁弹窗 ========== */
+  .badge-veil{position:fixed;inset:0;background:rgba(60,35,12,.5);z-index:90;opacity:0;pointer-events:none;transition:opacity .28s}
+  .badge-veil.show{opacity:1;pointer-events:auto}
+  .badge-pop{
+    position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(.8);z-index:95;
+    width:min(320px,84vw);background:var(--paper2);border-radius:28px;text-align:center;
+    padding:30px 24px 22px;box-shadow:var(--shadow-l);opacity:0;pointer-events:none;
+    transition:.32s cubic-bezier(.34,1.4,.64,1);
+  }
+  .badge-pop.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+  .badge-pop::before{
+    content:"";position:absolute;inset:0;border-radius:28px;pointer-events:none;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,220,160,.25) 45%,transparent 60%);
+  }
+  .bp-ico{font-size:64px;line-height:1;animation:bpjump .6s cubic-bezier(.34,1.8,.64,1)}
+  @keyframes bpjump{0%{transform:scale(.2) rotate(-20deg)}70%{transform:scale(1.2) rotate(6deg)}100%{transform:scale(1)}}
+  .bp-t{margin-top:14px;font-size:15px;font-weight:800;color:var(--accent-deep);letter-spacing:1px}
+  .bp-d{margin-top:6px;font-size:14px;font-weight:600;color:var(--ink-2)}
+  .bp-ok{
+    margin-top:20px;width:100%;padding:14px;border-radius:18px;font-size:15.5px;font-weight:800;
+    background:linear-gradient(135deg,var(--accent),var(--accent-mid));color:#FFF6EC;
+    box-shadow:0 6px 14px rgba(199,93,51,.3);
+  }
+
+  /* ========== 主题切换 ========== */
+  .theme-row{
+    display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:6px;
+    background:var(--card);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow-s);
+  }
+  .theme-dot{
+    position:relative;width:46px;height:46px;border-radius:50%;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.4),0 2px 6px rgba(60,30,10,.18);
+    transition:transform .16s cubic-bezier(.34,1.56,.64,1);
+  }
+  .theme-dot:active{transform:scale(.88)}
+  .theme-dot.on{outline:2.5px solid var(--accent);outline-offset:3px}
+  .theme-dot.on::after{
+    content:"✓";position:absolute;inset:0;display:grid;place-items:center;
+    color:#fff;font-weight:800;font-size:17px;text-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+
+  /* ========== 主题定义 ========== */
+  body[data-theme="matcha"]{
+    --accent:#5E8F4C; --accent-deep:#4C7A3E; --accent-soft:#E4EFD3; --accent-mid:#93BE6E;
+    --line:#DCE9C6; --header1:#6FA35A; --header2:#93BF74;
+    --bg:#EEF3E1; --card:#FCFEF7; --paper2:#FAFCF2; --soft:#E9F0D8; --soft2:#F1F6E5;
+    --ink:#394A2C; --ink-2:#596B45; --muted:#8FA078;
+    --navbg:rgba(238,243,225,.96); --body1:#E0EBC9; --body2:#D5E3BD;
+  }
+  body[data-theme="berry"]{
+    --accent:#B4486B; --accent-deep:#9C3658; --accent-soft:#F6DEE7; --accent-mid:#D77A9B;
+    --line:#F0CBD8; --header1:#C05C80; --header2:#D988A4;
+    --bg:#FAE8EE; --card:#FFFAFC; --paper2:#FEF7FA; --soft:#F5E0EA; --soft2:#F9EBF1;
+    --ink:#4C2E3A; --ink-2:#6B4656; --muted:#A87F92;
+    --navbg:rgba(250,232,238,.96); --body1:#F2D7DF; --body2:#E9CBD6;
+  }
+  body[data-theme="ocean"]{
+    --accent:#3E7CA6; --accent-deep:#2F6488; --accent-soft:#DCEBF5; --accent-mid:#6FA3C4;
+    --line:#CFE2EE; --header1:#4E88AE; --header2:#7FAECC;
+    --bg:#E5EFF5; --card:#FAFDFF; --paper2:#F4FAFD; --soft:#E0EDF5; --soft2:#EAF3F9;
+    --ink:#2C3E4C; --ink-2:#46586A; --muted:#7C8FA0;
+    --navbg:rgba(229,239,245,.96); --body1:#D5E6F0; --body2:#C9DDEA;
+  }
+  body[data-theme="cocoa"]{
+    --accent:#D98A5B; --accent-deep:#C06A3C; --accent-soft:#4A3A2C; --accent-mid:#B96A3B;
+    --line:#5A4836; --header1:#6A4E36; --header2:#8A6A4A;
+    --bg:#372B21; --card:#443627; --paper2:#4C3C2C; --soft:#544432; --soft2:#5E4C38;
+    --ink:#F3E4D0; --ink-2:#D9C5A9; --muted:#AC957B;
+    --navbg:rgba(55,43,33,.96); --body1:#4A3826; --body2:#2C221A;
+    --shadow-s:0 1px 2px rgba(0,0,0,.2),0 2px 6px rgba(0,0,0,.25);
+    --shadow-m:0 2px 4px rgba(0,0,0,.22),0 6px 16px rgba(0,0,0,.3);
+    --shadow-l:0 18px 44px rgba(0,0,0,.5);
+  }
+  body[data-theme="cocoa"] .recipe .flag,
+  body[data-theme="cocoa"] .recipe .num{background:rgba(40,28,18,.72);color:#F3E4D0}
+  body[data-theme="cocoa"] .sheet-close{background:rgba(40,28,18,.72);color:#F3E4D0}
+
+  /* ========== 桌面鼠标悬停 ========== */
+  @media (hover:hover){
+    .recipe:hover{transform:translateY(-3px);box-shadow:var(--shadow-m)}
+    .recipe:hover .photo .e{transform:scale(1.14) rotate(-5deg)}
+    .chip:hover{transform:translateY(-1px)}
+    .ing-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-m)}
+    .heart:hover{transform:scale(1.15)}
+    .saved-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-m)}
+    .saved-mini:hover,.pick-pill:hover,.ing-pill:hover{filter:brightness(1.03)}
+  }
+
+  /* ========== 自适应:平板 / 桌面 ========== */
+  @media (min-width:760px){
+    .phone{max-width:720px}
+    .recipe-grid{grid-template-columns:repeat(3,1fr)}
+    .ing-grid{grid-template-columns:repeat(4,1fr)}
+    .achv-grid{grid-template-columns:repeat(4,1fr)}
+    .sheet{max-width:560px}
+  }
+  @media (min-width:1020px){
+    .phone{max-width:980px}
+    .recipe-grid{grid-template-columns:repeat(4,1fr)}
+    .ing-grid{grid-template-columns:repeat(6,1fr)}
+    .achv-grid{grid-template-columns:repeat(7,1fr)}
+    nav.bottom{max-width:980px}
+    .sheet{max-width:620px}
+    header.topbar{padding:10px 28px 24px}
+    .hello .t{font-size:26px}
+    .page{padding:24px 24px 0}
+    .saved-item .ph{width:64px;height:64px}
+  }
+  /* 大屏时抽屉改为居中弹窗,底部仍贴边 */
+  @media (min-width:760px){
+    .badge-pop{width:min(340px,80vw)}
+  }
+
+  /* ========== 顶栏小屏自适应:按钮/标题不换行 ========== */
+  .pill{white-space:nowrap;flex:0 0 auto}
+  header.topbar{gap:12px}
+  .hello{min-width:0}
+  .hello .t,.hello .s{white-space:nowrap}
+  .hello .s{overflow:hidden;text-overflow:ellipsis;max-width:52vw}
+  @media (max-width:420px){
+    header.topbar{padding:6px 12px 18px;gap:8px}
+    .pill{height:36px;padding:0 11px;font-size:12.5px;gap:4px;border-radius:18px}
+    .hello{gap:8px}
+    .hello .ico{width:38px;height:38px;border-radius:12px}
+    .hello .ico svg{width:25px;height:25px}
+    .hello .t{font-size:17.5px}
+    .hello .s{font-size:11px;max-width:44vw}
+    .top-actions{gap:7px}
+  }
+  @media (max-width:350px){
+    .pill{padding:0 8px;font-size:12px}
+    .hello .t{font-size:16px}
+    .hello .s{font-size:10.5px}
+  }
+
+  /* ========== 暗色主题(可可夜)文字可读性修正 ========== */
+  body[data-theme="cocoa"] .chip .c-num{color:#C9B393}
+  body[data-theme="cocoa"] .chip.qf.fun{color:var(--accent)}
+  body[data-theme="cocoa"] .me-name button{color:#C9B393}
+  body[data-theme="cocoa"] .find-btn{color:#8A7458}
+  body[data-theme="cocoa"] .tag.hard{color:#A8452E}
+  body[data-theme="cocoa"] .tag.miss{color:#8A6A3E}
+  body[data-theme="cocoa"] .r-body h3,
+  body[data-theme="cocoa"] .saved-item .si-name,
+  body[data-theme="cocoa"] .daily .d-name{color:var(--ink) !important}
+  body[data-theme="cocoa"] .buddy .go{color:#F3D9A8}
+  body[data-theme="cocoa"] .go-miss{color:#F3D9A8}
+  body[data-theme="cocoa"] .danger{color:#EFA07A}
+  body[data-theme="cocoa"] .bp-t{color:#E8A76B}
+  body[data-theme="cocoa"] .cv-stepnum{color:var(--accent)}
+  body[data-theme="cocoa"] .ing-card.on .label{color:#E8B488}
+
+  /* ========== 做菜模式:图文步骤 ========== */
+  .cv-toprow{display:flex;justify-content:space-between;align-items:center}
+  .cv-scene-emo{font-size:46px;line-height:1;padding:10px 14px;border-radius:20px;background:var(--accent-soft);filter:drop-shadow(0 4px 5px rgba(90,40,10,.15))}
+  .cv-hints{display:flex;flex-wrap:wrap;gap:7px}
+  .cv-hints i{font-style:normal;font-size:12px;font-weight:800;padding:5px 11px;border-radius:11px;background:var(--soft);color:var(--ink-2);font-variant-numeric:tabular-nums}
+  .cv-ings{display:flex;flex-wrap:wrap;gap:6px}
+  .cv-ings i{font-style:normal;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;background:var(--paper2);box-shadow:inset 0 0 0 1.5px var(--line);padding:4px 9px;border-radius:10px;color:var(--ink-2)}
+  .step .step-ico{margin-left:auto;flex:0 0 auto;font-size:24px;filter:drop-shadow(0 2px 2px rgba(90,40,10,.15))}
+
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
   }
@@ -423,50 +695,6 @@
 </head>
 <body>
 
-<!-- Miso 猫咪 SVG 模板 -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="cat-svg" viewBox="0 0 120 120">
-    <!-- 后爪(高举) -->
-    <g class="paw-l">
-      <rect x="4" y="70" width="17" height="30" rx="8.5" fill="#E8A25D"/>
-      <path d="M6 80 h13 M6 87 h13" stroke="#D18A44" stroke-width="2.6" stroke-linecap="round"/>
-    </g>
-    <g class="paw-r">
-      <rect x="99" y="70" width="17" height="30" rx="8.5" fill="#E8A25D"/>
-      <path d="M101 80 h13 M101 87 h13" stroke="#D18A44" stroke-width="2.6" stroke-linecap="round"/>
-    </g>
-    <!-- 耳朵 -->
-    <path d="M28 40 L21 13 L47 30 Z" fill="#E8A25D"/>
-    <path d="M92 40 L99 13 L73 30 Z" fill="#E8A25D"/>
-    <path d="M31 33 L27.5 20.5 L40 29 Z" fill="#F6C6A8"/>
-    <path d="M89 33 L92.5 20.5 L80 29 Z" fill="#F6C6A8"/>
-    <!-- 脸 -->
-    <path d="M60 22 C88 22 101 44 101 63 C101 89 83 103 60 103 C37 103 19 89 19 63 C19 44 32 22 60 22 Z" fill="#FDF6EA"/>
-    <!-- 三花斑块 -->
-    <path d="M60 22 C74 22 86 28 93 40 C85 38 76 42 72 52 C64 42 54 39 46 41 C50 31 53 22 60 22 Z" fill="#E8A25D"/>
-    <path d="M19 63 C19 44 32 22 60 22 C51 25 45 32 43 41 C34 39 26 44 23 51 C20.5 56 19 58 19 63 Z" fill="#B96A3B"/>
-    <!-- 额头花纹 -->
-    <path d="M56 30 q4 6 0 11 M64 29 q4 6 0 11" stroke="#C98A4B" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7"/>
-    <!-- 眼睛(会眨) -->
-    <g class="eyes">
-      <ellipse cx="44" cy="63" rx="5.6" ry="7.2" fill="#3A2B1E"/>
-      <ellipse cx="76" cy="63" rx="5.6" ry="7.2" fill="#3A2B1E"/>
-      <circle cx="46.2" cy="60" r="1.9" fill="#fff"/>
-      <circle cx="78.2" cy="60" r="1.9" fill="#fff"/>
-    </g>
-    <!-- 鼻子和嘴 -->
-    <path d="M60 71 v3.2" stroke="#3A2B1E" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M55.5 78 q4.5 4.5 9 0" stroke="#3A2B1E" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-    <!-- 腮红 -->
-    <ellipse cx="34" cy="73" rx="6.2" ry="3.6" fill="#F5B48F" opacity=".6"/>
-    <ellipse cx="86" cy="73" rx="6.2" ry="3.6" fill="#F5B48F" opacity=".6"/>
-    <!-- 胡须 -->
-    <g stroke="#C9A579" stroke-width="1.7" stroke-linecap="round" opacity=".85">
-      <path d="M20 67 L33 69"/><path d="M22 75 L33 73"/>
-      <path d="M100 67 L87 69"/><path d="M98 75 L87 73"/>
-    </g>
-  </symbol>
-</svg>
 
 <div class="phone">
 
@@ -481,13 +709,13 @@
     </span>
   </div>
 
-  <!-- 橙色头部 -->
+  <!-- 头部 -->
   <header class="topbar">
     <div class="hello">
-      <span class="ico"><svg width="30" height="30" viewBox="0 0 120 120"><use href="#cat-svg"/></svg></span>
+      <span class="ico"><img class="char-img" src="https://bkimg.cdn.bcebos.com/pic/63d0f703918fa0ec08fa452924ce4eee3d6d55fb6dc4" referrerpolicy="no-referrer" alt="吉伊"></span>
       <div>
-        <div class="t">嗨,<span id="greet-name">Iyy</span></div>
-        <div class="s">今天想和 Miso 做点什么?</div>
+        <div class="t">嗨,<span id="greet-name">lty</span></div>
+        <div class="s" id="greet-sub">今天想和吉伊做点什么?</div>
       </div>
     </div>
     <div class="top-actions">
@@ -500,21 +728,18 @@
 
     <!-- ========== 页面一:食材匹配 ========== -->
     <section class="page active" id="page-match">
-      <div class="sec"><h2>冰箱里有什么?</h2><div class="sub">点选你有的食材</div></div>
+      <div class="sec"><h2>冰箱里有什么?</h2><div class="sub" id="pick-sub">点选你有的食材</div></div>
       <div class="search">
         <span class="s-ico">🔍</span>
         <input id="q-match" type="search" placeholder="搜索食材,如 鸡蛋 / egg">
         <button class="clear" data-for="q-match">✕</button>
       </div>
 
-      <div class="chips" id="chips-match">
-        <button class="chip on" data-filter="all">热门</button>
-        <button class="chip" data-filter="vegetable">🥬 蔬菜</button>
-        <button class="chip" data-filter="protein">🥩 蛋白质</button>
-        <button class="chip" data-filter="staple">🍚 主食</button>
-      </div>
+      <div class="chips" id="chips-match"></div>
 
       <div class="ing-grid" id="ing-grid"></div>
+
+      <div class="picked-row" id="picked-row"></div>
 
       <button class="find-btn" id="find-btn" disabled>
         <span>找食谱 →</span><span class="cnt" id="find-cnt">0 道能做</span>
@@ -523,10 +748,10 @@
 
     <!-- ========== 页面二:食谱列表 ========== -->
     <section class="page" id="page-recipes">
-      <div class="sec"><h2>和 Miso 做这道菜</h2><div class="sub" id="match-sub">先选好食材吧</div></div>
+      <div class="sec"><h2>和吉伊做这道菜</h2><div class="sub" id="recipes-sub">共 0 道菜</div></div>
       <div class="search">
         <span class="s-ico">🔍</span>
-        <input id="q-recipes" type="search" placeholder="搜索菜名,如 蛋包饭 / omurice">
+        <input id="q-recipes" type="search" placeholder="搜索菜名或食材,如 蛋包饭 / 鸡胸">
         <button class="clear" data-for="q-recipes">✕</button>
       </div>
 
@@ -535,7 +760,24 @@
         <button class="chip" data-filter="japanese">🇯🇵 日料</button>
         <button class="chip" data-filter="chinese">🇨🇳 中餐</button>
         <button class="chip" data-filter="korean">🇰🇷 韩料</button>
+        <button class="chip" data-filter="thai">🇹🇭 泰式</button>
+        <button class="chip" data-filter="italian">🇮🇹 意式</button>
+        <button class="chip" data-filter="western">🍴 西餐</button>
+        <button class="chip" data-filter="indian">🇮🇳 印度</button>
+        <button class="chip" data-filter="southeast">🌏 东南亚</button>
+        <button class="chip" data-filter="light">🥗 减脂餐</button>
+        <button class="chip" data-filter="dessert">🍰 甜点</button>
       </div>
+
+      <div class="chips qf-row" id="chips-qf">
+        <button class="chip qf fun" id="random-btn">🎲 随机一道</button>
+        <button class="chip qf" data-qf="canmake">✓ 能做的</button>
+        <button class="chip qf" data-qf="easy">👌 简单</button>
+        <button class="chip qf" data-qf="time30">⚡ 30分钟内</button>
+        <button class="chip qf sort" id="sort-btn">↕ 默认</button>
+      </div>
+
+      <div id="daily-slot"></div>
 
       <div class="recipe-grid" id="recipe-grid"></div>
 
@@ -550,9 +792,9 @@
     <section class="page" id="page-community">
       <div class="sec"><h2>厨师社区</h2><div class="sub">即将开放</div></div>
       <div class="construct">
-        <div class="big">🥘</div>
+        <div class="big"><img src="https://bkimg.cdn.bcebos.com/pic/4ec2d5628535e5dde71156aadf9cb0efce1b9d16c409" referrerpolicy="no-referrer" alt="乌萨奇"></div>
         <div class="t">社区正在施工中</div>
-        <div class="s">Miso 正在招募厨师,<br>在这里将能分享作品、交换食谱、组队做菜~</div>
+        <div class="s">乌萨奇正在努力搬砖 🍖<br>在这里将能分享作品、交换食谱、组队做菜~</div>
       </div>
     </section>
 
@@ -560,25 +802,28 @@
     <section class="page" id="page-me">
       <div class="me-card">
         <div class="me-top">
-          <div class="me-avatar"><svg viewBox="0 0 120 120" class="miso-svg"><use href="#cat-svg"/></svg></div>
+          <div class="me-avatar"><img class="char-img" src="https://bkimg.cdn.bcebos.com/pic/63d0f703918fa0ec08fa452924ce4eee3d6d55fb6dc4" referrerpolicy="no-referrer" alt="吉伊"></div>
           <div>
-            <div class="me-name"><span id="me-name">Iyy</span><button id="edit-name">✏️ 改名</button></div>
-            <div class="me-loc" id="me-loc">📍 香港 · 和 Miso 相识 1 天</div>
+            <div class="me-name"><span id="me-name">lty</span><button id="edit-name">✏️ 改名</button></div>
+            <div class="me-loc" id="me-loc">📍 香港 · 和吉伊相识 1 天</div>
           </div>
         </div>
         <div class="me-stats">
           <div class="st"><b id="st-cooked">0</b><span>做过</span></div>
           <div class="st"><b id="st-saved">0</b><span>收藏</span></div>
-          <div class="st"><b id="st-buddy">0</b><span>一起做</span></div>
+          <div class="st"><b id="st-cuisine">0</b><span>菜系</span></div>
         </div>
       </div>
+
+      <div class="sec" style="margin-top:22px"><h2>🎨 主题色彩</h2><div class="sub">选一个喜欢的颜色</div></div>
+      <div class="theme-row" id="theme-row"></div>
 
       <div class="buddy">
         <div class="head"><h3>My Food Buddy</h3><button id="buddy-change">Change ›</button></div>
         <div class="row">
-          <div class="ava"><svg viewBox="0 0 120 120" class="miso-svg"><use href="#cat-svg"/></svg></div>
+          <div class="ava"><img class="char-img" src="https://bkimg.cdn.bcebos.com/pic/4a36acaf2edda3cc7cd927fab4b32e01213fb90e34ec" referrerpolicy="no-referrer" alt="小八"></div>
           <div>
-            <div class="nm">Miso</div>
+            <div class="nm">小八</div>
             <div class="ds" id="buddy-ds">0 道菜是一起完成的</div>
             <button class="go pressable" id="buddy-go">一起做菜 →</button>
           </div>
@@ -586,22 +831,27 @@
         <div class="bond">
           <div class="bt"><span>🤝 羁绊等级 <span class="lv" id="bond-lv">Lv.1 · 见习搭档</span></span><span class="lv" id="bond-frac">0 / 1</span></div>
           <div class="bar"><div class="fill" id="bond-fill" style="width:0%"></div></div>
-          <div class="dots"><i class="on"></i><i></i><i></i><i></i></div>
+          <div class="dots" id="bond-dots"></div>
         </div>
       </div>
 
-      <div class="sec"><h2>❤️ 我的收藏</h2><div class="sub">横滑查看</div></div>
-      <div class="saved-row" id="saved-row"></div>
+      <div class="sec"><h2>🏅 成就墙</h2><div class="sub" id="achv-sub">0 / 7</div></div>
+      <div class="achv-grid" id="achv-grid"></div>
+
+      <div class="sec"><h2>❤️ 我的收藏</h2><div class="sub">点开可直接做菜</div></div>
+      <div class="saved-list" id="saved-list"></div>
       <div class="empty show" id="saved-empty" style="padding-top:10px">
         <div class="s">还没有收藏,去食谱页点亮 ❤️ 吧</div>
       </div>
+
+      <button class="danger" id="reset-btn">↺ 重置全部进度</button>
     </section>
 
-    <!-- 吉祥物 Miso -->
+    <!-- 吉祥物吉伊(可拖动) -->
     <div class="mascot" id="mascot">
-      <div class="bubble" id="bubble">嗨,我是 Miso 🐾</div>
-      <button class="cat" id="cat" aria-label="Miso">
-        <svg viewBox="0 0 120 120" class="miso-svg"><use href="#cat-svg"/></svg>
+      <div class="bubble" id="bubble">嗨,我是吉伊 🎀</div>
+      <button class="cat" id="cat" aria-label="吉伊">
+        <img class="char-img" src="https://bkimg.cdn.bcebos.com/pic/63d0f703918fa0ec08fa452924ce4eee3d6d55fb6dc4" referrerpolicy="no-referrer" alt="吉伊" draggable="false">
       </button>
     </div>
 
@@ -620,16 +870,8 @@
   <div class="sheet" id="sheet" role="dialog" aria-modal="true">
     <div class="grab"></div>
     <div class="scroll">
-      <div class="sheet-head" id="sh-head"><span class="e" id="sh-emoji">🍳</span><button class="sheet-close" id="sheet-close">✕</button></div>
-      <div class="sheet-body">
-        <h2 id="sh-name">菜名</h2>
-        <p class="sheet-intro" id="sh-intro"></p>
-        <div class="tags" id="sh-tags"></div>
-        <div class="list-title">🧺 需要的食材 <span class="hint" id="sh-hint"></span></div>
-        <div class="ing-list" id="sh-ings"></div>
-        <div class="list-title">👩‍🍳 步骤 <span class="hint">点击步骤打卡</span></div>
-        <div class="steps" id="sh-steps"></div>
-      </div>
+      <div class="sheet-head" id="sh-head"><span class="e" id="sh-emoji">🍳</span><button class="sheet-close" id="sheet-close" data-act="close">✕</button></div>
+      <div class="sheet-body" id="sheet-fill"></div>
     </div>
     <div class="cook-bar">
       <div class="prog"><span id="ck-label">一起做菜</span><span id="ck-count">0 / 0</span></div>
@@ -638,414 +880,19 @@
     </div>
   </div>
 
+  <!-- 成就解锁弹窗 -->
+  <div class="badge-veil" id="badge-veil"></div>
+  <div class="badge-pop" id="badge-pop">
+    <div class="bp-ico" id="bp-ico">🏅</div>
+    <div class="bp-t" id="bp-t"></div>
+    <div class="bp-d" id="bp-d"></div>
+    <button class="bp-ok" id="bp-ok">收下啦!</button>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
-<script>
-'use strict';
-/* ================= 数据 ================= */
-const INGS = [
-  {id:'egg',      emoji:'🥚', label:'鸡蛋',   cat:'protein',  kw:'鸡蛋 egg 蛋'},
-  {id:'rice',     emoji:'🍚', label:'米饭',   cat:'staple',   kw:'米饭 rice 大米 米饭'},
-  {id:'chicken',  emoji:'🍗', label:'鸡肉',   cat:'protein',  kw:'鸡肉 chicken 鸡'},
-  {id:'onion',    emoji:'🧅', label:'洋葱',   cat:'vegetable',kw:'洋葱 onion'},
-  {id:'carrot',   emoji:'🥕', label:'胡萝卜', cat:'vegetable',kw:'胡萝卜 carrot 萝卜'},
-  {id:'potato',   emoji:'🥔', label:'土豆',   cat:'vegetable',kw:'土豆 potato 马铃薯'},
-  {id:'tofu',     emoji:'🧊', label:'豆腐',   cat:'protein',  kw:'豆腐 tofu'},
-  {id:'mushroom', emoji:'🍄', label:'蘑菇',   cat:'vegetable',kw:'蘑菇 mushroom 香菇 菌'},
-  {id:'shrimp',   emoji:'🦐', label:'虾仁',   cat:'protein',  kw:'虾仁 shrimp 虾'},
-];
-
-const RECIPES = [
-  {id:'omurice', name:'蛋包饭', cuisine:'japanese', emoji:'🍳', bg:['#FBDFB6','#F2B96C'], color:'#2E6BD9',
-   level:'medium', time:40, ings:['egg','rice','onion'], soon:false,
-   intro:'金黄滑嫩的蛋皮,包住喷香的鸡肉炒饭——日式家常的经典,切开蛋皮的瞬间最治愈。',
-   steps:['洋葱切丁,鸡蛋加一小撮盐打散备用','热锅下油,炒香洋葱丁','加入米饭炒散,加盐和番茄酱调味','米饭装进小碗压实,倒扣在盘中央','平底锅摊一张蛋皮,轻轻包裹炒饭','挤上番茄酱,给蛋包饭画个笑脸 :)']},
-  {id:'ramen', name:'日式拉面', cuisine:'japanese', emoji:'🍜', bg:['#F6C7C2','#E49A93'], color:'#5A4632',
-   level:'hard', time:90, ings:['chicken','egg','mushroom'], soon:true,
-   intro:'慢炖出醇厚汤底,配上面条与溏心蛋,一碗热气腾腾的治愈。',
-   steps:[]},
-  {id:'teriyaki', name:'照烧鸡', cuisine:'japanese', emoji:'🍱', bg:['#EFE3CE','#D9C29B'], color:'#5A4632',
-   level:'medium', time:50, ings:['chicken','onion'], soon:true,
-   intro:'照烧汁在锅里咕嘟冒泡,鸡肉裹上亮晶晶的酱色,拌饭一绝。',
-   steps:[]},
-  {id:'tempura', name:'天妇罗', cuisine:'japanese', emoji:'🍤', bg:['#FBE7D3','#F0BE8A'], color:'#B8542E',
-   level:'hard', time:60, ings:['shrimp','carrot','mushroom'], soon:false,
-   intro:'薄薄一层酥衣,炸出虾的鲜甜和时蔬的清脆,趁热吃咔嚓作响。',
-   steps:['虾去壳开背,划几刀防止卷曲','低筋面粉加冰水轻拌成酥浆(有颗粒没关系)','虾和蔬菜裹上薄薄一层面浆','油温 170°C,分批炸至浅金黄','捞出放在吸油纸上,配天妇罗汁开吃']},
-  {id:'mapo', name:'麻婆豆腐', cuisine:'chinese', emoji:'🌶️', bg:['#F6CDC5','#DE8E80'], color:'#C0392B',
-   level:'medium', time:30, ings:['tofu','onion'], soon:false,
-   intro:'麻辣鲜香烫,嫩豆腐在红油里颤巍巍,一勺能干掉两碗饭。',
-   steps:['豆腐切块,盐水焯烫 1 分钟去豆腥','热油炒香洋葱丁和豆瓣酱','加小半碗水,放入豆腐轻轻推匀','中火煮 3 分钟,水淀粉勾薄芡','撒花椒面和葱花,出锅']},
-  {id:'bibimbap', name:'韩式拌饭', cuisine:'korean', emoji:'🥘', bg:['#FBE9D0','#EFC084'], color:'#2E6BD9',
-   level:'hard', time:45, ings:['rice','carrot','mushroom','egg'], soon:false,
-   intro:'五彩蔬菜码在热米饭上,煎一个太阳蛋,拌上辣酱每一口都满足。',
-   steps:['胡萝卜、蘑菇切丝,分别炒熟调味','米饭盛进热碗,码上各色蔬菜','煎一个溏心蛋放在正中间','挤上韩式辣酱和几滴香油','用力拌匀,开吃!']},
-];
-const BONDS = [
-  {at:0,  name:'见习搭档'},
-  {at:1,  name:'初级搭档'},
-  {at:3,  name:'默契搭档'},
-  {at:5,  name:'黄金搭档'},
-  {at:10, name:'灵魂食伴'},
-];
-
-/* ================= 状态(本地保存) ================= */
-const DEFAULTS = {picked:[], hearts:[], cooked:0, name:'Iyy', first:Date.now()};
-let S;
-try{ S = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('miso.v1')||'{}')); }
-catch(e){ S = Object.assign({}, DEFAULTS); }
-const save = () => { try{ localStorage.setItem('miso.v1', JSON.stringify(S)); }catch(e){} };
-
-/* ================= 小工具 ================= */
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const esc = t => t.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-let toastTimer;
-function toast(msg){
-  const t = $('#toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 1900);
-}
-
-/* ================= 渲染:食材格 ================= */
-function renderIngs(){
-  $('#ing-grid').innerHTML = INGS.map(i => `
-    <button class="ing-card ${S.picked.includes(i.id)?'on':''}" data-id="${i.id}" data-cat="${i.cat}" data-kw="${esc(i.kw)} ${esc(i.label)}">
-      <span class="plus">${S.picked.includes(i.id)?'✓':'+'}</span>
-      <span class="emoji">${i.emoji}</span>
-      <span class="label">${esc(i.label)}</span>
-    </button>`).join('');
-}
-
-/* ================= 渲染:食谱卡 ================= */
-function missingOf(r){
-  return r.ings.filter(id => !S.picked.includes(id));
-}
-function renderRecipes(){
-  $('#recipe-grid').innerHTML = RECIPES.map((r,i) => {
-    const miss = missingOf(r);
-    const lv  = r.level==='hard' ? '<span class="tag hard">有挑战</span>' : '<span class="tag medium">中等</span>';
-    let status = '';
-    if(S.picked.length > 0 && !r.soon){
-      status = miss.length === 0
-        ? '<span class="tag ok">✓ 可制作</span>'
-        : `<span class="tag miss">缺 ${miss.length} 样</span>`;
-    }
-    const soonTag = r.soon ? '<span class="soon">敬请期待</span>' : '';
-    return `
-    <article class="recipe" data-id="${r.id}" data-cuisine="${r.cuisine}" data-kw="${esc(r.name)} ${r.id}">
-      <div class="photo" style="background:linear-gradient(155deg,${r.bg[0]},${r.bg[1]})"><span class="e">${r.emoji}</span></div>
-      <span class="num">${String(i+1).padStart(2,'0')}</span>
-      <button class="heart ${S.hearts.includes(r.id)?'on':''}" data-id="${r.id}" aria-label="收藏">${S.hearts.includes(r.id)?'❤️':'♡'}</button>
-      ${soonTag}
-      <div class="r-body">
-        <h3 style="color:${r.color}">${esc(r.name)}</h3>
-        <div class="tags">${lv}<span class="tag time">⏱ ${r.time} 分钟</span></div>
-        ${status?`<div class="tags" style="margin-top:7px">${status}</div>`:''}
-      </div>
-    </article>`;
-  }).join('');
-  applyFilter('recipe-grid');
-  $('#recipes-empty').classList.toggle('show',
-    RECIPES.every(r => $('#recipe-grid').querySelector(`[data-id="${r.id}"]`).style.display === 'none'));
-}
-
-/* ================= 渲染:我的页 ================= */
-const AVAIL = 1000*60*60*24; // 一天的毫秒数
-function renderMe(){
-  const days = Math.max(1, Math.ceil((Date.now()-S.first)/AVAIL));
-  $('#st-cooked').textContent = S.cooked;
-  $('#st-saved').textContent  = S.hearts.length;
-  $('#st-buddy').textContent  = S.cooked;
-  $('#me-name').textContent   = S.name;
-  $('#greet-name').textContent= S.name;
-  $('#me-loc').textContent    = `📍 ${CITIES[cityIdx][0]} · 和 Miso 相识 ${days} 天`;
-  $('#buddy-ds').textContent  = `${S.cooked} 道菜是一起完成的`;
-
-  // 羁绊等级
-  let lv = 0;
-  BONDS.forEach((b,i) => { if(S.cooked >= b.at) lv = i; });
-  const next = BONDS[Math.min(lv+1, BONDS.length-1)];
-  const base = BONDS[lv].at;
-  const span = Math.max(1, next.at - base);
-  const frac = lv === BONDS.length-1 ? 1 : (S.cooked - base)/span;
-  $('#bond-lv').textContent   = `Lv.${lv+1} · ${BONDS[lv].name}`;
-  $('#bond-frac').textContent = lv === BONDS.length-1 ? 'MAX' : `${S.cooked-base} / ${span}`;
-  $('#bond-fill').style.width = (frac*100).toFixed(0) + '%';
-  $$('#page-me .bond .dots i').forEach((d,i) => d.classList.toggle('on', i <= lv && i < 4));
-
-  // 收藏横滑
-  const favs = RECIPES.filter(r => S.hearts.includes(r.id));
-  $('#saved-empty').classList.toggle('show', favs.length === 0);
-  $('#saved-row').innerHTML = favs.map(r => `
-    <button class="saved-mini" data-open="${r.id}">
-      <div class="ph" style="background:linear-gradient(155deg,${r.bg[0]},${r.bg[1]})">${r.emoji}</div>
-      <div class="nm">${esc(r.name)}</div>
-    </button>`).join('');
-}
-
-/* ================= 页面切换 ================= */
-let bubbles;
-function go(name){
-  $$('.page').forEach(p => p.classList.toggle('active', p.id === 'page-'+name));
-  $$('.nav-item').forEach(n => n.classList.toggle('on', n.dataset.page === name));
-  if(name === 'recipes' && S.picked.length === 0) say('先去选点食材吧,我好帮你挑菜~');
-  if(name === 'me') renderMe();
-  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
-}
-
-/* ================= Miso 台词 ================= */
-const LINES = [
-  '嗨,我是 Miso,今天想吃点什么?🐾',
-  '告诉我冰箱里有什么,我来帮你配菜!',
-  '收藏喜欢的菜,回头一起做 ❤️',
-  '做完一道菜,我们的羁绊就会加深~',
-  '肚子饿了的话,先从蛋包饭开始?',
-];
-let lineIdx = 0;
-function say(text, keep){
-  const b = $('#bubble');
-  b.textContent = text || LINES[lineIdx++ % LINES.length];
-  b.classList.add('show');
-  clearTimeout(say._t);
-  say._t = setTimeout(() => b.classList.remove('show'), keep || 3200);
-}
-
-/* ================= 筛选(分类 + 搜索,取交集) ================= */
-const gridState = {
-  'ing-grid':    {q:'', filter:'all'},
-  'recipe-grid': {q:'', filter:'all'},
-};
-function applyFilter(gridId){
-  const st = gridState[gridId];
-  $$('#'+gridId+' > *').forEach(card => {
-    const okCat = st.filter === 'all' || (card.dataset.cat||card.dataset.cuisine) === st.filter;
-    const okQ   = !st.q || (card.dataset.kw||'').toLowerCase().includes(st.q);
-    card.style.display = okCat && okQ ? '' : 'none';
-  });
-  if(gridId === 'recipe-grid'){
-    const anyVisible = RECIPES.some(r => $('#recipe-grid').querySelector(`[data-id="${r.id}"]`).style.display === '');
-    $('#recipes-empty').classList.toggle('show', !anyVisible);
-  }
-}
-[['chips-match','ing-grid','cat'],['chips-recipes','recipe-grid','cuisine']].forEach(([chipsId, gridId]) => {
-  $('#'+chipsId).addEventListener('click', e => {
-    const chip = e.target.closest('.chip'); if(!chip) return;
-    $$('#'+chipsId+' .chip').forEach(c => c.classList.toggle('on', c === chip));
-    gridState[gridId].filter = chip.dataset.filter;
-    applyFilter(gridId);
-  });
-});
-[['q-match','ing-grid'],['q-recipes','recipe-grid']].forEach(([inputId, gridId]) => {
-  const input = $('#'+inputId);
-  const wrap = input.closest('.search');
-  input.addEventListener('input', () => {
-    gridState[gridId].q = input.value.trim().toLowerCase();
-    wrap.classList.toggle('has', !!input.value);
-    applyFilter(gridId);
-  });
-});
-$$('.search .clear').forEach(btn => btn.addEventListener('click', () => {
-  const input = $('#'+btn.dataset.for);
-  input.value = '';
-  input.closest('.search').classList.remove('has');
-  gridState[input.closest('.page').id.replace('page-','') === 'match' ? 'ing-grid' : 'recipe-grid'].q = '';
-  applyFilter(input.closest('.page').id === 'page-match' ? 'ing-grid' : 'recipe-grid');
-}));
-
-/* ================= 事件:选食材 ================= */
-$('#ing-grid').addEventListener('click', e => {
-  const card = e.target.closest('.ing-card'); if(!card) return;
-  const id = card.dataset.id;
-  const on = !S.picked.includes(id);
-  if(on) S.picked.push(id); else S.picked = S.picked.filter(x => x !== id);
-  card.classList.toggle('on', on);
-  card.querySelector('.plus').textContent = on ? '✓' : '+';
-  save(); refreshMatchUI();
-});
-function refreshMatchUI(){
-  const makable = RECIPES.filter(r => !r.soon && missingOf(r).length === 0).length;
-  const btn = $('#find-btn');
-  btn.disabled = S.picked.length === 0;
-  btn.classList.toggle('ready', S.picked.length > 0);
-  $('#find-cnt').textContent = `${makable} 道能做`;
-  const sub = $('#match-sub');
-  sub.innerHTML = S.picked.length === 0
-    ? '先选好食材吧'
-    : `已选 <b>${S.picked.length}</b> 种 · 能做 <b>${makable}</b> 道`;
-}
-$('#find-btn').addEventListener('click', () => {
-  go('recipes');
-  const n = RECIPES.filter(r => !r.soon && missingOf(r).length === 0).length;
-  say(n > 0 ? `用你选的食材,能做 ${n} 道菜!` : '这些食材还凑不齐一道菜,再多选一点?');
-});
-
-/* ================= 事件:食谱卡 / 收藏 / 详情 ================= */
-$('#recipe-grid').addEventListener('click', e => {
-  const heart = e.target.closest('.heart');
-  if(heart){
-    e.stopPropagation();
-    const id = heart.dataset.id;
-    const on = !S.hearts.includes(id);
-    if(on) S.hearts.push(id); else S.hearts = S.hearts.filter(x => x !== id);
-    heart.classList.toggle('on', on);
-    heart.textContent = on ? '❤️' : '♡';
-    save(); renderMe(); refreshMatchUI();
-    toast(on ? '❤️ 已收藏' : '已取消收藏');
-    return;
-  }
-  const card = e.target.closest('.recipe'); if(!card) return;
-  const r = RECIPES.find(x => x.id === card.dataset.id);
-  if(r.soon){ toast('🚧 「' + r.name + '」正在筹备中,敬请期待~'); return; }
-  openSheet(r);
-});
-$('#saved-row').addEventListener('click', e => {
-  const m = e.target.closest('.saved-mini'); if(!m) return;
-  openSheet(RECIPES.find(x => x.id === m.dataset.open));
-});
-
-/* ================= 详情抽屉 & 做菜模式 ================= */
-let cur = null, cooking = false;
-function openSheet(r){
-  cur = r; cooking = false;
-  $('#sh-head').style.background = `linear-gradient(155deg,${r.bg[0]},${r.bg[1]})`;
-  $('#sh-emoji').textContent = r.emoji;
-  $('#sh-name').textContent  = r.name;
-  $('#sh-intro').textContent = r.intro;
-  const miss = missingOf(r);
-  $('#sh-tags').innerHTML =
-    (r.level==='hard'?'<span class="tag hard">有挑战</span>':'<span class="tag medium">中等</span>') +
-    `<span class="tag time">⏱ ${r.time} 分钟</span>` +
-    (miss.length === 0 ? '<span class="tag ok">✓ 可制作</span>' : `<span class="tag miss">缺 ${miss.length} 样食材</span>`);
-  $('#sh-ings').innerHTML = r.ings.map(id => {
-    const ing = INGS.find(x => x.id === id);
-    const has = S.picked.includes(id);
-    return `<span class="ing-pill ${has?'ok':'miss'}">${has?'✓':'○'} ${ing.emoji} ${esc(ing.label)}</span>`;
-  }).join('');
-  $('#sh-hint').textContent = miss.length === 0 ? '食材齐啦!' : `还缺 ${miss.length} 样,先去选食材`;
-  renderSteps();
-  updateCookBar();
-  $('#veil').classList.add('show');
-  $('#sheet').classList.add('show');
-}
-function renderSteps(){
-  $('#sh-steps').innerHTML = cur.steps.map((s,i) => `
-    <button class="step" data-i="${i}">
-      <span class="no">${i+1}</span>
-      <p>${esc(s)}</p>
-      <span class="tick">✓</span>
-    </button>`).join('');
-}
-function doneCount(){ return $$('#sh-steps .step.done').length; }
-function updateCookBar(){
-  const n = cur.steps.length, done = doneCount();
-  $('#ck-count').textContent = `${done} / ${n}`;
-  $('#ck-fill').style.width = (n ? done/n*100 : 0).toFixed(0) + '%';
-  const btn = $('#cook-btn');
-  if(!cooking){
-    btn.textContent = missingOf(cur).length === 0 ? '开始一起做菜 →' : '食材不够,回去找食材';
-    btn.classList.add('busy');
-  }else if(done === n){
-    btn.textContent = '🎉 完成啦!';
-    btn.classList.remove('busy');
-  }else{
-    btn.textContent = '继续加油,还剩 ' + (n-done) + ' 步';
-    btn.classList.remove('busy');
-  }
-  $('#ck-label').textContent = cooking ? '做菜进行中' : '一起做菜';
-}
-$('#sh-steps').addEventListener('click', e => {
-  const st = e.target.closest('.step'); if(!st || !cooking) return;
-  st.classList.toggle('done');
-  const done = doneCount();
-  if(done === cur.steps.length) celebrate();
-  updateCookBar();
-});
-$('#cook-btn').addEventListener('click', () => {
-  if(!cooking){
-    if(missingOf(cur).length > 0){ go('match'); closeSheet(); say('选齐食材就能开做啦!'); return; }
-    cooking = true;
-    $$('#sh-steps .step').forEach(s => s.classList.remove('done'));
-    say('跟着步骤来,我陪着你 👨‍🍳', 5000);
-  }else if(doneCount() === cur.steps.length){
-    S.cooked++; save(); renderMe(); refreshMatchUI();
-    toast(`🎉 「${cur.name}」完成!和 Miso 的羁绊 +1`);
-    say(randomPraise(), 4200);
-    closeSheet();
-    return;
-  }
-  updateCookBar();
-});
-function randomPraise(){
-  const p = ['太棒了!你就是天生厨师!','香迷糊了,继续下一道?','Miso 已经开始期待下次合作了~','羁绊等级悄悄上涨中 ✨'];
-  return p[Math.floor(Math.random()*p.length)];
-}
-function closeSheet(){
-  $('#veil').classList.remove('show');
-  $('#sheet').classList.remove('show');
-  cooking = false;
-}
-$('#sheet-close').addEventListener('click', closeSheet);
-$('#veil').addEventListener('click', closeSheet);
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeSheet(); });
-
-function celebrate(){
-  const emjs = ['✨','🎉','❤️','⭐','🐾','🥳'];
-  const rect = $('#sheet').getBoundingClientRect();
-  for(let i = 0; i < 16; i++){
-    const s = document.createElement('span');
-    s.className = 'confetti';
-    s.textContent = emjs[i % emjs.length];
-    s.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*180) + 'px';
-    s.style.top  = (rect.top + rect.height*0.4) + 'px';
-    s.style.setProperty('--dx', (Math.random()-0.5)*220 + 'px');
-    s.style.setProperty('--dy', (-120 - Math.random()*160) + 'px');
-    s.style.animationDelay = (Math.random()*0.25) + 's';
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 1800);
-  }
-}
-
-/* ================= 导航 & 头部按钮 ================= */
-$$('.nav-item').forEach(n => n.addEventListener('click', () => go(n.dataset.page)));
-$$('[data-page].pill').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
-$('#buddy-go').addEventListener('click', () => { go('match'); say('看看冰箱里有什么,选给我吧~'); });
-$('#buddy-change').addEventListener('click', () => toast('🐾 Miso:我可是唯一的!'));
-const CITIES = [['香港','Hong Kong'],['上海','Shanghai'],['东京','Tokyo']];
-let cityIdx = 0;
-$('#city-btn').addEventListener('click', () => {
-  cityIdx = (cityIdx+1) % CITIES.length;
-  $('#city-btn').textContent = '📍 · ' + CITIES[cityIdx][0];
-  renderMe();
-});
-$('#edit-name').addEventListener('click', () => {
-  const name = (prompt('给自己起个名字吧(最多 8 个字):', S.name) || '').trim().slice(0,8);
-  if(name){ S.name = name; save(); renderMe(); toast('你好呀,' + name + '!'); }
-});
-
-/* ================= 吉祥物 ================= */
-$('#cat').addEventListener('click', () => say());
-
-/* ================= 状态栏时钟 ================= */
-function tick(){
-  const d = new Date();
-  $('#clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
-tick(); setInterval(tick, 15000);
-
-/* ================= 地址栏定位页面(#recipes/#me 等) ================= */
-function fromHash(){
-  const h = location.hash.replace('#','');
-  if(['recipes','match','community','me'].includes(h)) go(h);
-}
-window.addEventListener('hashchange', fromHash);
-
-/* ================= 启动 ================= */
-renderIngs(); renderRecipes(); renderMe(); refreshMatchUI(); fromHash();
-setTimeout(() => say('嗨,我是 Miso 🐾 点我听新台词!', 3600), 800);
-</script>
+<script src="data.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

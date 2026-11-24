@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><style>
+body{margin:0;background:#FDF6EA;display:flex;justify-content:space-around;align-items:center;height:100vh;gap:12px}
+div{flex:1;display:flex;flex-direction:column;align-items:center}
+svg{width:300px;height:300px}
+p{font-size:20px;font-weight:700;color:#5A4632;margin-top:8px}
+</style></head><body>
+<!-- 引用主文件里的 symbol:直接内联三份 symbol 的方式不行,故此页面由脚本生成时复制 -->
+<div><svg viewBox="0 0 120 120"><use href="#chii-svg"/></svg><p>吉伊</p></div>
+<div><svg viewBox="0 0 120 120"><use href="#hachi-svg"/></svg><p>小八</p></div>
+<div><svg viewBox="0 0 120 120"><use href="#usagi-svg"/></svg><p>乌萨奇</p></div>
+<script>fetch('index.html').then(r=>r.text()).then(t=>{
+  const m=t.match(/<symbol[\s\S]*?<\/symbol>/g).join('');
+  const s=document.createElement('div');s.style.display='none';s.innerHTML='<svg width="0" height="0">'+m+'</svg>';
+  document.body.prepend(s);
+});</script>
+</body></html>
